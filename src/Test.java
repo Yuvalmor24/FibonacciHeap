@@ -2,6 +2,7 @@
 //FibonacciHeap Tester
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class Test {
@@ -42,12 +43,12 @@ public class Test {
             bugFound("test4");
         }
         try {
-            //test5();
+            test5();
         } catch (Exception e) {
             bugFound("test5");
         }
         try {
-            //test6();
+            test6();
         } catch (Exception e) {
             bugFound("test6");
         }
@@ -168,11 +169,19 @@ public class Test {
             grade -= 8;
         }
         try {
-            //test30();
+            test30();
         } catch (Exception e) {
             System.out.println("Bug found in " + "test30");
             grade -= 8;
         }
+        // OUR TEST
+        try {
+            test31();
+        } catch (Exception e) {
+            System.out.println("Bug found in " + "test31");
+            grade -= 8;
+        }
+
 
         System.exit((int) grade);
     }
@@ -366,6 +375,7 @@ public class Test {
         }
         if (!fibonacciHeap.isEmpty())
             bugFound(test);
+
     }
 
     static void test8() {
@@ -628,7 +638,6 @@ public class Test {
         fibonacciHeap.insert(1);
         fibonacciHeap.insert(2);
         fibonacciHeap.insert(3);
-
         if (fibonacciHeap.potential() != 3 ||
                 FibonacciHeap.totalCuts() - cuts != 0 ||
                 FibonacciHeap.totalLinks() - links != 0 ||
@@ -791,17 +800,16 @@ public class Test {
         }
 
 
-        if (fibonacciHeap.potential() != 1)
+        if (fibonacciHeap.potential() != 1) {
             bugFound(test);
-
+        }
         int totalCuts = FibonacciHeap.totalCuts();
         int links = FibonacciHeap.totalLinks();
-
         boolean noCascading = true;
         int iterationCuts;
 
         Collections.shuffle(nodes);
-
+        System.out.println(Arrays.toString(fibonacciHeap.countersRep()));
         for (int i = 0; i < treeSize; i++) {
             iterationCuts = FibonacciHeap.totalCuts();
 
@@ -810,7 +818,19 @@ public class Test {
             if (FibonacciHeap.totalCuts() - iterationCuts > 1)
                 noCascading = false;
         }
+        System.out.println(Arrays.toString(fibonacciHeap.countersRep()));
 
+        int i = 0;
+        FibonacciHeap.HeapNode curr = fibonacciHeap.head;
+        curr.getPrev().setNext(null);
+        FibonacciHeap.HeapNode temp = fibonacciHeap.head.getNext();
+        while (temp != null) {
+            temp = temp.getNext();
+            i++;
+        }
+        System.out.println(i);
+        curr.getPrev().setNext(curr);
+        System.out.println(curr.getPrev().getKey());
         if (fibonacciHeap.potential() != treeSize ||
                 FibonacciHeap.totalCuts() - totalCuts != treeSize - 1 ||
                 FibonacciHeap.totalLinks() - links != 0 ||
@@ -988,6 +1008,36 @@ public class Test {
             i++;
         }
 
+    }
+
+    static void test31() {
+        String test = "test31";
+        fibonacciHeap = new FibonacciHeap();
+
+        int treeSize = 32768;
+        int sizeToDelete = 1000;
+
+        ArrayList<FibonacciHeap.HeapNode> nodes = new ArrayList<>();
+
+        for (int i = treeSize; i < treeSize * 2; i++) {
+            nodes.add(fibonacciHeap.insert(i));
+        }
+
+        for (int i = 0; i < sizeToDelete; i++) {
+            fibonacciHeap.insert(i);
+        }
+
+        for (int i = 0; i < sizeToDelete; i++) {
+            fibonacciHeap.deleteMin();
+        }
+
+        int[] arr = FibonacciHeap.kMin(fibonacciHeap,50);
+        System.out.println(Arrays.toString(arr));
+        for (int i = 0; i < arr.length; i++){
+            if (arr[i] != 32768 + i){
+                bugFound(test);
+            }
+        }
     }
 
     static void bugFound(String test) {
